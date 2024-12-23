@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Phone Mask</title>
+</head>
+<body>
+
+<input type="tel" id="phone" placeholder="+7 (---) - ___ - ___" maxlength="20" />
+
+<script>
+window.addEventListener('load', () => {
+  const phoneInput = document.querySelector('#phone');
+  phoneInput.addEventListener('keydown', disallowNonNumericInput);
+  phoneInput.addEventListener('input', formatToPhone);
+});
+
+const disallowNonNumericInput = (evt) => {
+  if (evt.ctrlKey || evt.key.length > 1 || /\d/.test(evt.key)) {
+    return; // Allow numbers and control keys
+  }
+  evt.preventDefault(); // Block other input
+};
+
+const formatToPhone = (evt) => {
+  let digits = evt.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+
+  // Ensure "+7" prefix is always present
+  if (!digits.startsWith('7')) {
+    digits = `7${digits}`;
+  }
+  digits = digits.substring(0, 11); // Limit to 11 digits total (1 for "7" + 10 digits)
+
+  const countryCode = '+7'; // Fixed prefix
+  const areaCode = digits.substring(1, 4);
+  const firstPart = digits.substring(4, 7);
+  const secondPart = digits.substring(7, 11);
+
+  // Build the formatted number based on digit lengths
+  if (digits.length > 7) {
+    evt.target.value = `${countryCode} (${areaCode}) - ${firstPart} - ${secondPart}`;
+  } else if (digits.length > 4) {
+    evt.target.value = `${countryCode} (${areaCode}) - ${firstPart}`;
+  } else if (digits.length > 1) {
+    evt.target.value = `${countryCode} (${areaCode}`;
+  } else {
+    evt.target.value = countryCode; // Default to "+7"
+  }
+};
+</script>
+
+</body>
+</html>
